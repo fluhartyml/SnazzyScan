@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C0B990692E92DADB00C5B367 /* SnazzyScan.entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = C0B990682E92DADB00C5B367 /* SnazzyScan.entitlements.plist */; };
+		C0B9906B2E92ED2100C5B367 /* SnazzyScan_DeveloperNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B9906A2E92ED0600C5B367 /* SnazzyScan_DeveloperNotes.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		C0B990482E92BD2700C5B367 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +32,8 @@
 		C0B9903A2E92BD2600C5B367 /* SnazzyScan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnazzyScan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0B990472E92BD2700C5B367 /* SnazzyScanTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnazzyScanTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0B990512E92BD2700C5B367 /* SnazzyScanUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnazzyScanUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0B990682E92DADB00C5B367 /* SnazzyScan.entitlements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = SnazzyScan.entitlements.plist; sourceTree = "<group>"; };
+		C0B9906A2E92ED0600C5B367 /* SnazzyScan_DeveloperNotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnazzyScan_DeveloperNotes.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +82,8 @@
 		C0B990312E92BD2600C5B367 = {
 			isa = PBXGroup;
 			children = (
+				C0B9906A2E92ED0600C5B367 /* SnazzyScan_DeveloperNotes.swift */,
+				C0B990682E92DADB00C5B367 /* SnazzyScan.entitlements.plist */,
 				C0B9903C2E92BD2600C5B367 /* SnazzyScan */,
 				C0B9904A2E92BD2700C5B367 /* SnazzyScanTests */,
 				C0B990542E92BD2700C5B367 /* SnazzyScanUITests */,
@@ -212,6 +221,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0B990692E92DADB00C5B367 /* SnazzyScan.entitlements.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +246,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0B9906B2E92ED2100C5B367 /* SnazzyScan_DeveloperNotes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,6 +406,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SnazzyScan/SnazzyScan.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3X3F6UJ44H;
@@ -428,6 +440,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SnazzyScan/SnazzyScan.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3X3F6UJ44H;
