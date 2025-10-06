@@ -1,13 +1,14 @@
 //  ContentView.swift
 //  SnazzyScan
 //
-//  Created by Michael Fluharty on 2025-10-05 18:36
+//  Created by Michael Fluharty on 2025-10-05 18:59
 //
 
 import SwiftUI
 
 struct ContentView: View {
     @State private var showScanner = false
+
     var body: some View {
         NavigationView {
             VStack(spacing: 24) {
@@ -33,11 +34,7 @@ struct ContentView: View {
             .padding()
             .navigationTitle("SnazzyScan")
             .sheet(isPresented: $showScanner) {
-                // Scanner view will go here in the next step.
-                Text("Scanner will appear here.")
-                    .font(.title2)
-                    .foregroundColor(.gray)
-                    .padding()
+                DocumentScanner()
             }
         }
     }
