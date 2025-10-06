@@ -8,6 +8,7 @@
 import SwiftUI
 import VisionKit
 import PDFKit
+import QuickLook
 
 struct DocumentScanner: UIViewControllerRepresentable {
     @Binding var scannedImages: [UIImage]
@@ -33,16 +34,28 @@ struct DocumentScanner: UIViewControllerRepresentable {
         }
         
         func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
+            print("📸 Scan completed with \(scan.pageCount) pages")
+            
             // Get all scanned pages
+            var images: [UIImage] = []
             for pageIndex in 0..<scan.pageCount {
                 let image = scan.imageOfPage(at: pageIndex)
-                parent.scannedImages.append(image)
+                images.append(image)
+                print("✅ Extracted page \(pageIndex + 1): \(image.size)")
             }
             
-            // Save to Files app
-            savePDFToFiles(images: parent.scannedImages)
+            print("📦 Total images collected: \(images.count)")
+            parent.scannedImages = images
             
-            parent.dismiss()
+            // Create PDF and show share sheet
+            print("🔨 Creating PDF from \(images.count) images...")
+            if let pdfURL = createPDF(from: images) {
+                print("✅ PDF created successfully at: \(pdfURL.path)")
+                showShareSheet(url: pdfURL, from: controller)
+            } else {
+                print("❌ FAILED to create PDF")
+                parent.dismiss()
+            }
         }
         
         func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
@@ -54,7 +67,7 @@ struct DocumentScanner: UIViewControllerRepresentable {
             parent.dismiss()
         }
         
-        func savePDFToFiles(images: [UIImage]) {
+        func createPDF(from images: [UIImage]) -> URL? {
             let pdfDocument = PDFDocument()
             
             for (index, image) in images.enumerated() {
@@ -69,26 +82,88 @@ struct DocumentScanner: UIViewControllerRepresentable {
             let timestamp = formatter.string(from: Date())
             let filename = "Scan_\(timestamp).pdf"
             
-            // Get iCloud Drive URL
-            if let iCloudURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") {
-                let snazzyScanFolder = iCloudURL.appendingPathComponent("SnazzyScan")
-                
-                // Create SnazzyScan folder if it doesn't exist
-                try? FileManager.default.createDirectory(at: snazzyScanFolder, withIntermediateDirectories: true)
-                
-                let fileURL = snazzyScanFolder.appendingPathComponent(filename)
-                
-                if let data = pdfDocument.dataRepresentation() {
-                    do {
-                        try data.write(to: fileURL)
-                        print("PDF saved to iCloud Drive: \(fileURL.path)")
-                    } catch {
-                        print("Error saving PDF: \(error.localizedDescription)")
-                    }
+            // Save to temporary directory
+            let tempDir = FileManager.default.temporaryDirectory
+            let fileURL = tempDir.appendingPathComponent(filename)
+            
+            if let data = pdfDocument.dataRepresentation() {
+                do {
+                    try data.write(to: fileURL)
+                    print("PDF created: \(fileURL.path)")
+                    return fileURL
+                } catch {
+                    print("Error creating PDF: \(error.localizedDescription)")
+                    return nil
                 }
-            } else {
-                print("iCloud Drive not available")
+            }
+            
+            return nil
+        }
+        
+        func showShareSheet(url: URL, from viewController: UIViewController) {
+            print("📤 Presenting share sheet")
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                let activityVC = UIActivityViewController(
+                    activityItems: [url],
+                    applicationActivities: nil
+                )
+                
+                // For iPad: required to set popover source
+                if let popover = activityVC.popoverPresentationController {
+                    popover.sourceView = viewController.view
+                    popover.sourceRect = CGRect(
+                        x: viewController.view.bounds.midX,
+                        y: viewController.view.bounds.midY,
+                        width: 0,
+                        height: 0
+                    )
+                    popover.permittedArrowDirections = []
+                }
+                
+                // When share sheet is dismissed, dismiss scanner too
+                activityVC.completionWithItemsHandler = { _, _, _, _ in
+                    print("📤 Share sheet dismissed")
+                    viewController.dismiss(animated: true)
+                }
+                
+                print("✅ Presenting share sheet from scanner")
+                viewController.present(activityVC, animated: true)
             }
         }
+    }
+}
+
+// MARK: - QuickLook Preview Support
+
+class PDFPreviewDataSource: NSObject, QLPreviewControllerDataSource {
+    let fileURL: URL
+    
+    init(fileURL: URL) {
+        self.fileURL = fileURL
+    }
+    
+    func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+        return 1
+    }
+    
+    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        return fileURL as QLPreviewItem
+    }
+}
+
+class PDFPreviewDelegate: NSObject, QLPreviewControllerDelegate {
+    var parent: DocumentScanner
+    weak var scannerVC: UIViewController?
+    
+    init(parent: DocumentScanner, scannerVC: UIViewController) {
+        self.parent = parent
+        self.scannerVC = scannerVC
+    }
+    
+    func previewControllerDidDismiss(_ controller: QLPreviewController) {
+        print("📱 QuickLook dismissed, now dismissing scanner")
+        // When user closes PDF preview, dismiss the scanner too
+        scannerVC?.dismiss(animated: true)
     }
 }
